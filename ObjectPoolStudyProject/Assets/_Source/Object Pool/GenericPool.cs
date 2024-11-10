@@ -1,55 +1,54 @@
 using System.Collections.Generic;
 
-public abstract class GenericPool<T> where T : IPoolable<T>
+namespace ObjectPoolSystem
 {
-    private Queue<T> _storedObjects;
-    private List<T> _usedObjects;
-
-    private readonly int _startPoolSize;
-    private readonly int _defaultPoolExtand;
-    private readonly int _maxPoolSize;
-
-    private int _currentPoolSize { get { return _storedObjects.Count + _usedObjects.Count; } }
-
-    public GenericPool(int startPoolSize, int defaultPoolSize, int maxPoolSize)
+    public abstract class GenericPool<T> where T : IPoolable<T>
     {
-        _startPoolSize = startPoolSize;
-        _defaultPoolExtand = defaultPoolSize;
-        _maxPoolSize = maxPoolSize;
+        private Queue<T> _storedObjects;
+        private List<T> _usedObjects;
 
-        _storedObjects = new();
-        _usedObjects = new();
-    }
+        private readonly int _startPoolSize;
+        private readonly int _defaultPoolExtand;
+        private readonly int _maxPoolSize;
 
-    protected void CreatePool()
-    {
-        AddObjects(_startPoolSize);
-    }
+        private int _currentPoolSize { get { return _storedObjects.Count + _usedObjects.Count; } }
 
-    public void ClearPool()
-    {
-        foreach (T poolable in _storedObjects)
+        public GenericPool(int startPoolSize, int defaultPoolSize, int maxPoolSize)
         {
-            poolable.OnObjectDisabled -= ReturnObject;
+            _startPoolSize = startPoolSize;
+            _defaultPoolExtand = defaultPoolSize;
+            _maxPoolSize = maxPoolSize;
+
+            _storedObjects = new();
+            _usedObjects = new();
         }
 
-        _storedObjects.Clear();
-    }
-
-    public bool TryGetObject(out T poolable)
-    {
-        poolable = default;
-
-        if (_storedObjects.Count > 0)
+        protected void CreatePool()
         {
-            poolable = _storedObjects.Dequeue();
-            _usedObjects.Add(poolable);
-
-            return true;
+            AddObjects(_startPoolSize);
         }
-        else
+
+        public void ClearPool()
         {
-            if (_currentPoolSize < _maxPoolSize)
+            foreach (T poolable in _storedObjects)
+                poolable.OnObjectDisabled -= ReturnObject;
+
+            _storedObjects.Clear();
+        }
+
+        public bool TryGetObject(out T poolable)
+        {
+            poolable = default;
+
+            if (_storedObjects.Count > 0)
+            {
+                poolable = _storedObjects.Dequeue();
+                _usedObjects.Add(poolable);
+
+                return true;
+            }
+            else
+                if (_currentPoolSize < _maxPoolSize)
             {
                 ExtendPoolSize();
 
@@ -58,42 +57,37 @@ public abstract class GenericPool<T> where T : IPoolable<T>
 
                 return true;
             }
+
+            return false;
         }
 
-        return false;
-    }
-
-    private void ReturnObject(T poolable)
-    {
-        if (_storedObjects.Contains(poolable)) { return; }
-
-        _usedObjects.Remove(poolable);
-        _storedObjects.Enqueue(poolable);
-    }
-
-    private void ExtendPoolSize()
-    {
-        int availablePoolExtand = _maxPoolSize - _currentPoolSize;
-
-        if (availablePoolExtand >= _defaultPoolExtand)
+        private void ReturnObject(T poolable)
         {
-            AddObjects(_defaultPoolExtand);
+            if (_storedObjects.Contains(poolable)) return;
+            _usedObjects.Remove(poolable);
+            _storedObjects.Enqueue(poolable);
         }
-        else
-        {
-            AddObjects(availablePoolExtand);
-        }
-    }
 
-    private void AddObjects(int amount)
-    {
-        for (int i = 0; i < amount; i++)
+        private void ExtendPoolSize()
         {
-            T instance = CreateObject();
-            instance.OnObjectDisabled += ReturnObject;
-            _storedObjects.Enqueue(instance);
-        }
-    }
+            int availablePoolExtand = _maxPoolSize - _currentPoolSize;
 
-    protected abstract T CreateObject();
+            if (availablePoolExtand >= _defaultPoolExtand)
+                AddObjects(_defaultPoolExtand);
+            else
+                AddObjects(availablePoolExtand);
+        }
+
+        private void AddObjects(int amount)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                T instance = CreateObject();
+                instance.OnObjectDisabled += ReturnObject;
+                _storedObjects.Enqueue(instance);
+            }
+        }
+
+        protected abstract T CreateObject();
+    }
 }

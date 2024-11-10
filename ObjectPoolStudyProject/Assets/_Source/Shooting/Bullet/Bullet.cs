@@ -1,41 +1,45 @@
+using ObjectPoolSystem;
 using System;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour, IPoolable<Bullet>
+namespace ShootingSystem
 {
-    private float _speed;
-    private float _deathTime;
-
-    private float _lifeTime;
-
-    public event Action<Bullet> OnObjectDisabled;
-
-    private void Update()
+    public class Bullet : MonoBehaviour, IPoolable<Bullet>
     {
-        transform.position += transform.forward * _speed * Time.deltaTime;
+        private float _speed;
+        private float _deathTime;
 
-        CountLifeTime();
-    }
+        private float _lifeTime;
 
-    private void OnDisable()
-    {
-        OnObjectDisabled?.Invoke(this);
-    }
+        public event Action<Bullet> OnObjectDisabled;
 
-    public void SetupBullet(float speed, float deathTime)
-    {
-        _speed = speed;
-        _deathTime = deathTime;
-    }
-
-    private void CountLifeTime()
-    {
-        _lifeTime += Time.deltaTime;
-
-        if (_lifeTime >= _deathTime)
+        private void Update()
         {
-            _lifeTime = 0;
-            gameObject.SetActive(false);
+            transform.position += transform.forward * _speed * Time.deltaTime;
+
+            CountLifeTime();
+        }
+
+        private void OnDisable()
+        {
+            OnObjectDisabled?.Invoke(this);
+        }
+
+        public void SetupBullet(float speed, float deathTime)
+        {
+            _speed = speed;
+            _deathTime = deathTime;
+        }
+
+        private void CountLifeTime()
+        {
+            _lifeTime += Time.deltaTime;
+
+            if (_lifeTime >= _deathTime)
+            {
+                _lifeTime = 0;
+                gameObject.SetActive(false);
+            }
         }
     }
 }

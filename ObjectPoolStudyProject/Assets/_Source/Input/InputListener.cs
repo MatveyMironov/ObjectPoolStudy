@@ -1,24 +1,25 @@
 using UnityEngine;
 
-public class InputListener : MonoBehaviour
+namespace PlayerSystem
 {
-    private PlayerShooter _playerShooter;
-
-    private void Update()
+    public class InputListener : MonoBehaviour
     {
-        ListenShootInput();
-    }
+        private PlayerShooter _playerShooter;
 
-    public void Construct(PlayerShooter playerShooter)
-    {
-        _playerShooter = playerShooter;
-    }
-
-    private void ListenShootInput()
-    {
-        if (Input.GetKeyUp(KeyCode.Mouse0))
+        private void Update()
         {
-            _playerShooter.Shoot();
+            ListenShootInput();
+        }
+
+        public void Construct(PlayerShooter playerShooter)
+        {
+            _playerShooter = playerShooter;
+        }
+
+        private void ListenShootInput()
+        {
+            if (Input.GetKeyUp(KeyCode.Mouse0))
+                _playerShooter.Shoot();
         }
     }
 }

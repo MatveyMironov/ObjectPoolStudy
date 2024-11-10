@@ -1,3 +1,6 @@
+using ObjectPoolSystem;
+using PlayerSystem;
+using ShootingSystem;
 using UnityEngine;
 
 namespace Core

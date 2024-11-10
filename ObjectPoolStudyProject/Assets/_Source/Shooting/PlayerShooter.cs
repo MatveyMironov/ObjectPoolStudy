@@ -1,30 +1,35 @@
+using ObjectPoolSystem;
+using ShootingSystem;
 using UnityEngine;
 
-public class PlayerShooter : MonoBehaviour
+namespace PlayerSystem
 {
-    [SerializeField] private Transform muzzle;
-
-    [Header("Bullet")]
-    [SerializeField] private float bulletSpeed;
-    [SerializeField] private float bulletDeathTime;
-
-    private BulletPool _bulletPool;
-
-    public void Construct(BulletPool bulletPool)
+    public class PlayerShooter : MonoBehaviour
     {
-        _bulletPool = bulletPool;
-    }
+        [SerializeField] private Transform muzzle;
 
-    public void Shoot()
-    {
-        if (_bulletPool.TryGetObject(out Bullet bullet))
+        [Header("Bullet")]
+        [SerializeField] private float bulletSpeed;
+        [SerializeField] private float bulletDeathTime;
+
+        private BulletPool _bulletPool;
+
+        public void Construct(BulletPool bulletPool)
         {
-            bullet.transform.position = muzzle.position;
-            bullet.transform.rotation = muzzle.rotation;
+            _bulletPool = bulletPool;
+        }
 
-            bullet.SetupBullet(bulletSpeed, bulletDeathTime);
+        public void Shoot()
+        {
+            if (_bulletPool.TryGetObject(out Bullet bullet))
+            {
+                bullet.transform.position = muzzle.position;
+                bullet.transform.rotation = muzzle.rotation;
 
-            bullet.gameObject.SetActive(true);
+                bullet.SetupBullet(bulletSpeed, bulletDeathTime);
+
+                bullet.gameObject.SetActive(true);
+            }
         }
     }
 }
