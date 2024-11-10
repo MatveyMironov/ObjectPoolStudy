@@ -1,14 +1,14 @@
 using System;
 using UnityEngine;
 
-public class Bullet : MonoBehaviour
+public class Bullet : MonoBehaviour, IPoolable<Bullet>
 {
     private float _speed;
     private float _deathTime;
 
     private float _lifeTime;
 
-    public event Action<Bullet> OnBulletDisabled;
+    public event Action<Bullet> OnObjectDisabled;
 
     private void Update()
     {
@@ -19,7 +19,7 @@ public class Bullet : MonoBehaviour
 
     private void OnDisable()
     {
-        OnBulletDisabled?.Invoke(this);
+        OnObjectDisabled?.Invoke(this);
     }
 
     public void SetupBullet(float speed, float deathTime)

@@ -17,7 +17,7 @@ public class PlayerShooter : MonoBehaviour
 
     public void Shoot()
     {
-        if (_bulletPool.TryGetBullet(out Bullet bullet))
+        if (_bulletPool.TryGetObject(out Bullet bullet))
         {
             bullet.transform.position = muzzle.position;
             bullet.transform.rotation = muzzle.rotation;
