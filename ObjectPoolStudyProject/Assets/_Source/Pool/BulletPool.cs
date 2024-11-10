@@ -25,8 +25,6 @@ public class BulletPool
 
     private void InitPool(Bullet bulletPrefab, Transform root)
     {
-        Debug.Log("initializing");
-
         _storedBullets = new();
         _usedBullets = new();
 
@@ -37,8 +35,6 @@ public class BulletPool
     {
         bullet = null;
 
-        Debug.Log($"stored/used bullets: {_storedBullets.Count}/{_usedBullets.Count}");
-
         if (_storedBullets.Count > 0)
         {
             bullet = _storedBullets.Dequeue();
@@ -48,8 +44,6 @@ public class BulletPool
         }
         else
         {
-            Debug.Log("insufficient pool size");
-
             if (_currentPoolSize < _maxPoolSize)
             {
                 ExtendPoolSize();
@@ -66,8 +60,6 @@ public class BulletPool
 
     public void ReturnBullet(Bullet bullet)
     {
-        Debug.Log("returning");
-
         if (_storedBullets.Contains(bullet)) { return; }
 
         _usedBullets.Remove(bullet);
@@ -76,8 +68,6 @@ public class BulletPool
 
     private void ExtendPoolSize()
     {
-        Debug.Log("extending");
-
         int availablePoolExtand = _maxPoolSize - _currentPoolSize;
 
         if (availablePoolExtand >= _defaultPoolExtand)
@@ -92,8 +82,6 @@ public class BulletPool
 
     private void AddPoolSize(int amount)
     {
-        Debug.Log($"adding {amount}");
-
         for (int i = 0; i < amount; i++)
         {
             Bullet bulletInstance = Object.Instantiate(_bulletPrefab, _root);
@@ -101,7 +89,5 @@ public class BulletPool
             bulletInstance.OnBulletDisabled += () => ReturnBullet(bulletInstance);
             _storedBullets.Enqueue(bulletInstance);
         }
-
-        Debug.Log($"stored bullets: {_storedBullets.Count}");
     }
 }
