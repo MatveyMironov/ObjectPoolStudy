@@ -31,6 +31,16 @@ public class BulletPool
         AddPoolSize(_startPoolSize);
     }
 
+    public void ClearPool()
+    {
+        foreach (Bullet bullet in _storedBullets)
+        {
+            bullet.OnBulletDisabled -= ReturnBullet;
+        }
+
+        _storedBullets.Clear();
+    }
+
     public bool TryGetBullet(out Bullet bullet)
     {
         bullet = null;
@@ -86,7 +96,7 @@ public class BulletPool
         {
             Bullet bulletInstance = Object.Instantiate(_bulletPrefab, _root);
             bulletInstance.gameObject.SetActive(false);
-            bulletInstance.OnBulletDisabled += () => ReturnBullet(bulletInstance);
+            bulletInstance.OnBulletDisabled += ReturnBullet;
             _storedBullets.Enqueue(bulletInstance);
         }
     }

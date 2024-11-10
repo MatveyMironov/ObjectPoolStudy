@@ -8,9 +8,7 @@ public class Bullet : MonoBehaviour
 
     private float _lifeTime;
 
-    private BulletPool _bulletPool;
-
-    public event Action OnBulletDisabled;
+    public event Action<Bullet> OnBulletDisabled;
 
     private void Update()
     {
@@ -21,7 +19,7 @@ public class Bullet : MonoBehaviour
 
     private void OnDisable()
     {
-        OnBulletDisabled?.Invoke();
+        OnBulletDisabled?.Invoke(this);
     }
 
     public void SetupBullet(float speed, float deathTime)
